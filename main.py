@@ -12,10 +12,17 @@ def generate_response(txt, api_key):
     text_splitter = CharacterTextSplitter()
     texts = text_splitter.split_text(txt)
     docs = [Document(page_content=t) for t in texts]
+    
+    # Crear un prompt en español para la tarea de resumen
+    prompt_template = (
+        "Resuma el siguiente texto en español:\n\n{input}\n\nResumen:"
+    )
+    
     chain = load_summarize_chain(
         llm,
         chain_type="map_reduce",
-        prompt_template="Resuma el siguiente texto en español:"
+        map_prompt=prompt_template,
+        combine_prompt=prompt_template
     )
     return chain.run(docs)
 
