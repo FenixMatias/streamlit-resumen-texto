@@ -4,10 +4,10 @@ from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 
-def generate_response(txt):
+def generate_response(txt, api_key):
     llm = OpenAI(
         temperature=0,
-        openai_api_key=openai_api_key
+        openai_api_key=api_key
     )
     text_splitter = CharacterTextSplitter()
     texts = text_splitter.split_text(txt)
@@ -19,7 +19,7 @@ def generate_response(txt):
     return chain.run(docs)
 
 st.set_page_config(
-    page_title = "Resumir un texto"
+    page_title="Resumir un texto"
 )
 st.title("Resumir un texto")
 
@@ -40,9 +40,9 @@ with st.form("summarize_form", clear_on_submit=True):
     )
     submitted = st.form_submit_button("Submit")
     if submitted and openai_api_key.startswith("sk-"):
-        response = generate_response(txt_input)
+        response = generate_response(txt_input, openai_api_key)
         result.append(response)
         del openai_api_key
 
 if len(result):
-    st.info(response)
+    st.info(result[0])
