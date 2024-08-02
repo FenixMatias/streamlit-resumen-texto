@@ -3,6 +3,7 @@ from langchain_openai import OpenAI
 from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
+from langchain.prompts import PromptTemplate
 
 def generate_response(txt, api_key):
     llm = OpenAI(
@@ -14,15 +15,20 @@ def generate_response(txt, api_key):
     docs = [Document(page_content=t) for t in texts]
     
     # Crear un prompt en español para la tarea de resumen
-    prompt_template = (
-        "Resuma el siguiente texto en español:\n\n{input}\n\nResumen:"
+    map_prompt_template = PromptTemplate(
+        input_variables=["text"],
+        template="Resuma el siguiente texto en español:\n\n{text}\n\nResumen:"
+    )
+    combine_prompt_template = PromptTemplate(
+        input_variables=["text"],
+        template="Combine los siguientes resúmenes en uno solo en español:\n\n{text}\n\nResumen combinado:"
     )
     
     chain = load_summarize_chain(
         llm,
         chain_type="map_reduce",
-        map_prompt=prompt_template,
-        combine_prompt=prompt_template
+        map_prompt=map_prompt_template,
+        combine_prompt=combine_prompt_template
     )
     return chain.run(docs)
 
@@ -53,4 +59,4 @@ with st.form("summarize_form", clear_on_submit=True):
         del openai_api_key
 
 if len(result):
-    st.info(result[0]) # Mostrar el primer resultado del resumen
+    st.info(result[0])
