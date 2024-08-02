@@ -14,7 +14,8 @@ def generate_response(txt, api_key):
     docs = [Document(page_content=t) for t in texts]
     chain = load_summarize_chain(
         llm,
-        chain_type="map_reduce"
+        chain_type="map_reduce",
+        prompt_template="Resuma el siguiente texto en español:"
     )
     return chain.run(docs)
 
@@ -45,4 +46,4 @@ with st.form("summarize_form", clear_on_submit=True):
         del openai_api_key
 
 if len(result):
-    st.info(result[0])
+    st.info(result[0]) # Mostrar el primer resultado del resumen
